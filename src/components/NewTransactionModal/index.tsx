@@ -1,4 +1,4 @@
-import { FormEvent, useState, useContext } from 'react'
+import { FormEvent, useState } from 'react'
 import { Container, TransactionTypeContainer, RadioBox } from './styles'
 import Modal from 'react-modal'
 //IMGS
@@ -6,29 +6,37 @@ import incomeImg from '../../assets/income.svg'
 import outcomeImg from '../../assets/outcome.svg'
 import closeImg from '../../assets/close.svg'
 
-import { TransactionsContext } from '../../TransactionsContext'
+import { useTransactions }  from '../../hooks/useTransactions'
 interface NewTransactionModalProps {
   isOpen: boolean;
   onRequestClose: () => void
 }
 
 export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionModalProps) {
-  const { createTransaction } = useContext(TransactionsContext)
+  const { createTransaction } = useTransactions()
 
   const [title, setTitle] = useState('')
   const [amount, setAmount] = useState(0)
   const [category, setCategory] = useState('')
   const [type, setType] = useState('deposit')
 
-  function handelCreateNewTransaction(event: FormEvent){
+  async function handelCreateNewTransaction(event: FormEvent){
     event.preventDefault()
 
-    createTransaction({
+    await createTransaction({
       title,
-      amount,//renomeando de amount para value
+      amount,
       category,
       type
     })
+
+    //limpando os campos do Modal
+    setTitle('')
+    setAmount(0)
+    setCategory('')
+    setType('deposit')
+
+    onRequestClose()
   }
   
   return (
